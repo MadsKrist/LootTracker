@@ -1,0 +1,13 @@
+## Interface: 11200
+## Title: LootTracker
+## Notes: Tracks loot value per farming session using aux prices
+## Author: You
+## Version: 0.1
+## SavedVariables: LootTrackerDB
+## SavedVariablesPerCharacter: LootTrackerCDB
+## OptionalDeps: aux-addon
+
+core.lua
+pricing.lua
+commands.lua
+gui.lua
