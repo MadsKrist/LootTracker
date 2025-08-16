@@ -126,6 +126,10 @@ function LT:OnItemLoot(msg)
             local unitValue = self:GetItemValue(itemId, suffixId)
             local totalValue = unitValue * quantity
             
+            -- Get item quality (0=Poor/Gray, 1=Common/White, 2=Uncommon/Green, 3=Rare/Blue, 4=Epic/Purple, 5=Legendary/Orange)
+            local _, _, quality = GetItemInfo(itemId)
+            quality = quality or 1 -- Default to white if unknown
+            
             -- Add to session
             if self.session.items[itemId] then
                 self.session.items[itemId].count = self.session.items[itemId].count + quantity
@@ -134,7 +138,8 @@ function LT:OnItemLoot(msg)
                 self.session.items[itemId] = {
                     count = quantity,
                     value = totalValue,
-                    link = itemLink
+                    link = itemLink,
+                    quality = quality
                 }
             end
             

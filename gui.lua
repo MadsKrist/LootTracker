@@ -222,14 +222,29 @@ function LT:CreateGUI()
     f.resetBtn:SetPoint("BOTTOMRIGHT", -7, 7)
     f.resetBtn:SetScript("OnClick", function() LT:ResetSession() LT:UpdateGUI() end)
 
-    -- Timer for updating display every second
+    -- Quality filter button
+    f.qualityBtn = create_aux_button(f, "All")
+    f.qualityBtn:SetPoint("BOTTOM", 0, 7)
+    f.qualityBtn:SetScript("OnClick", function() LT:CycleQualityFilter() end)
+
+    -- Timers for different update intervals
     f.timer = 0
+    f.gphTimer = 0
     f:SetScript("OnUpdate", function()
         f.timer = f.timer + arg1
-        if f.timer >= 1.0 then -- Update every second
+        f.gphTimer = f.gphTimer + arg1
+        
+        if f.timer >= 1.0 then -- Update time display every second
             f.timer = 0
-            if LT.session.active then -- Update for both active and paused sessions
-                LT:UpdateGUI()
+            if LT.session.active then
+                LT:UpdateGUI(false) -- Don't recalculate GPH
+            end
+        end
+        
+        if f.gphTimer >= 5.0 then -- Update GPH every 5 seconds
+            f.gphTimer = 0
+            if LT.session.active then
+                LT:UpdateGUI(true) -- Recalculate GPH
             end
         end
     end)
@@ -243,6 +258,26 @@ end
 function LT:ShowGUI()
     self:CreateGUI()
     self:LoadSettings() -- Apply saved settings
+    
+    -- Initialize quality filter button text
+    if self.gui.qualityBtn then
+        local qualities = {
+            {level = 0, name = "All"},
+            {level = 1, name = "White+"},
+            {level = 2, name = "Green+"},
+            {level = 3, name = "Blue+"},
+            {level = 4, name = "Purple+"}
+        }
+        
+        local currentFilter = self.qualityFilter or 0
+        for _, quality in ipairs(qualities) do
+            if quality.level == currentFilter then
+                self.gui.qualityBtn:SetText(quality.name)
+                break
+            end
+        end
+    end
+    
     self.gui:Show()
     self:UpdateGUI()
 end
@@ -250,25 +285,34 @@ end
 --------------------------------------------------
 -- Update GUI contents
 --------------------------------------------------
-function LT:UpdateGUI()
+function LT:UpdateGUI(recalculateGPH)
     if not self.gui or not self.gui:IsShown() then return end
     local s = self.session
 
     if not s.active then
         self.gui.stats:SetText("No active session")
+        -- Reset cached GPH when no session
+        self.cachedGPH = nil
     else
         local elapsed = s.elapsed
         if not s.paused and s.startTime then
             elapsed = elapsed + (GetTime() - s.startTime)
         end
 
-        local gph = 0
         local totalValue = s.money
         for _, entry in pairs(s.items) do
             totalValue = totalValue + entry.value
         end
-        if elapsed > 0 then
-            gph = (totalValue / elapsed) * 3600
+
+        -- Only recalculate GPH if requested or if we don't have a cached value
+        local gph = self.cachedGPH or 0
+        if recalculateGPH ~= false then -- Default to true if not specified
+            if elapsed > 0 then
+                gph = (totalValue / elapsed) * 3600
+            else
+                gph = 0
+            end
+            self.cachedGPH = gph
         end
 
         self.gui.stats:SetText(string.format(
@@ -296,17 +340,23 @@ function LT:UpdateGUI()
     end
     wipe(self.gui.items)
 
+    -- Get current quality filter
+    local minQuality = self.qualityFilter or 0
+    
     local y = -5
     for _, entry in pairs(self.session.items) do
-        local line = self.gui.itemContent:CreateFontString(nil, "OVERLAY")
-        line:SetFont(FONT, FONT_SIZE.small)
-        line:SetTextColor(unpack(COLORS.text.enabled))
-        line:SetPoint("TOPLEFT", 1, y)
-        line:SetPoint("TOPRIGHT", -1, y)
-        line:SetJustifyH("LEFT")
-        line:SetText(entry.count.."x "..entry.link.." = "..self:FormatMoney(entry.value))
-        table.insert(self.gui.items, line)
-        y = y - 16
+        -- Apply quality filter for display (but all items still count in totals)
+        if (entry.quality or 1) >= minQuality then
+            local line = self.gui.itemContent:CreateFontString(nil, "OVERLAY")
+            line:SetFont(FONT, FONT_SIZE.small)
+            line:SetTextColor(unpack(COLORS.text.enabled))
+            line:SetPoint("TOPLEFT", 1, y)
+            line:SetPoint("TOPRIGHT", -1, y)
+            line:SetJustifyH("LEFT")
+            line:SetText(entry.count.."x "..entry.link.." = "..self:FormatMoney(entry.value))
+            table.insert(self.gui.items, line)
+            y = y - 16
+        end
     end
 end
 
@@ -389,5 +439,58 @@ function LT:LoadSettings()
         if settings.fontSize then
             self:SetFontSize(settings.fontSize)
         end
+        
+        if settings.qualityFilter then
+            self.qualityFilter = settings.qualityFilter
+        end
     end
+end
+
+--------------------------------------------------
+-- Quality Filter
+--------------------------------------------------
+function LT:CycleQualityFilter()
+    -- Quality levels: 0=Gray, 1=White, 2=Green, 3=Blue, 4=Purple, 5=Orange
+    local qualities = {
+        {level = 0, name = "All"},
+        {level = 1, name = "White+"},
+        {level = 2, name = "Green+"},
+        {level = 3, name = "Blue+"},
+        {level = 4, name = "Purple+"}
+    }
+    
+    -- Find current index
+    local currentIndex = 1
+    for i, quality in ipairs(qualities) do
+        if quality.level == (self.qualityFilter or 0) then
+            currentIndex = i
+            break
+        end
+    end
+    
+    -- Move to next
+    currentIndex = currentIndex + 1
+    if currentIndex > table.getn(qualities) then
+        currentIndex = 1
+    end
+    
+    -- Set new filter
+    self.qualityFilter = qualities[currentIndex].level
+    
+    -- Update button text
+    if self.gui and self.gui.qualityBtn then
+        self.gui.qualityBtn:SetText(qualities[currentIndex].name)
+    end
+    
+    -- Save setting
+    if not LootTrackerDB then
+        LootTrackerDB = {}
+    end
+    if not LootTrackerDB.settings then
+        LootTrackerDB.settings = {}
+    end
+    LootTrackerDB.settings.qualityFilter = self.qualityFilter
+    
+    -- Update display
+    self:UpdateGUI()
 end
