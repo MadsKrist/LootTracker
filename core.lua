@@ -184,7 +184,8 @@ function LT:FormatMoney(copper)
     
     copper = math.floor(copper)
     local gold = math.floor(copper / 10000)
-    local silver = math.floor((copper % 10000) / 100)
+    local remainder = copper % 10000
+    local silver = math.floor(remainder / 100)
     local c = copper % 100
     
     local result = ""
