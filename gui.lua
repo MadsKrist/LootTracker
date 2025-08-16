@@ -9,6 +9,10 @@ local FONT_SIZE = {
     large = 18,
 }
 
+-- Default settings
+local DEFAULT_SCALE = 1.0
+local DEFAULT_FONT_SIZE = "medium"
+
 -- Color scheme similar to aux
 local COLORS = {
     window = { bg = {0.05, 0.05, 0.08, 0.95}, border = {0.2, 0.2, 0.3, 1} },
@@ -62,14 +66,35 @@ function LT:CreateGUI()
     -- Aux-style window background
     set_window_style(f)
     
-    f:Hide()
-
+    -- Close button
+    local closeBtn = CreateFrame("Button", nil, f)
+    closeBtn:SetWidth(20)
+    closeBtn:SetHeight(20)
+    closeBtn:SetPoint("TOPRIGHT", f, "TOPRIGHT", -5, -5)
+    set_content_style(closeBtn)
+    
+    local closeText = closeBtn:CreateFontString()
+    closeText:SetFont(FONT, FONT_SIZE.medium)
+    closeText:SetTextColor(unpack(COLORS.text.enabled))
+    closeText:SetAllPoints()
+    closeText:SetJustifyH("CENTER")
+    closeText:SetJustifyV("CENTER")
+    closeText:SetText("×")
+    
+    local closeHighlight = closeBtn:CreateTexture(nil, "HIGHLIGHT")
+    closeHighlight:SetAllPoints()
+    closeHighlight:SetTexture(1, 0.2, 0.2, 0.3)
+    
+    closeBtn:SetScript("OnClick", function() f:Hide() end)
+    
     -- Title using aux font styling
     f.title = f:CreateFontString(nil, "OVERLAY")
     f.title:SetFont(FONT, FONT_SIZE.large)
     f.title:SetTextColor(unpack(COLORS.text.enabled))
     f.title:SetPoint("TOP", f, "TOP", 0, -10)
     f.title:SetText("Loot Tracker")
+    
+    f:Hide()
 
     --------------------------------------------------
     -- Stats panel
@@ -97,7 +122,7 @@ function LT:CreateGUI()
     set_content_style(listPanel)
     
     local scrollFrame = CreateFrame("ScrollFrame", "LTItemScroll", listPanel, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", listPanel, "TOPLEFT", 5, -5)
+    scrollFrame:SetPoint("TOPLEFT", listPanel, "TOPLEFT", 5, -15)
     scrollFrame:SetWidth(285)
     scrollFrame:SetHeight(225)
 
@@ -154,6 +179,7 @@ end
 --------------------------------------------------
 function LT:ShowGUI()
     self:CreateGUI()
+    self:LoadSettings() -- Apply saved settings
     self.gui:Show()
     self:UpdateGUI()
 end
@@ -219,4 +245,72 @@ function LT:FormatTime(seconds)
     local m = math.floor(remainder / 60)
     local s = remainder - (m * 60)
     return string.format("%02dh %02dm %02ds", h, m, s)
+end
+
+--------------------------------------------------
+-- Scale and Font Size Functions
+--------------------------------------------------
+function LT:SetScale(scale)
+    if self.gui then
+        self.gui:SetScale(scale)
+        -- Store setting for persistence
+        if not LootTrackerDB.settings then
+            LootTrackerDB.settings = {}
+        end
+        LootTrackerDB.settings.scale = scale
+    end
+end
+
+function LT:SetFontSize(size)
+    if not self.gui then return end
+    
+    local fontSize = FONT_SIZE[size] or FONT_SIZE.medium
+    
+    -- Update title
+    if self.gui.title then
+        self.gui.title:SetFont(FONT, fontSize + 3) -- Title slightly larger
+    end
+    
+    -- Update stats text
+    if self.gui.stats then
+        self.gui.stats:SetFont(FONT, fontSize)
+    end
+    
+    -- Update all item text
+    for _, item in ipairs(self.gui.items) do
+        if item and item.SetFont then
+            item:SetFont(FONT, fontSize - 2) -- Items slightly smaller
+        end
+    end
+    
+    -- Update button text
+    if self.gui.startBtn and self.gui.startBtn:GetFontString() then
+        self.gui.startBtn:GetFontString():SetFont(FONT, fontSize)
+    end
+    if self.gui.pauseBtn and self.gui.pauseBtn:GetFontString() then
+        self.gui.pauseBtn:GetFontString():SetFont(FONT, fontSize)
+    end
+    if self.gui.resetBtn and self.gui.resetBtn:GetFontString() then
+        self.gui.resetBtn:GetFontString():SetFont(FONT, fontSize)
+    end
+    
+    -- Store setting for persistence
+    if not LootTrackerDB.settings then
+        LootTrackerDB.settings = {}
+    end
+    LootTrackerDB.settings.fontSize = size
+end
+
+function LT:LoadSettings()
+    if LootTrackerDB and LootTrackerDB.settings then
+        local settings = LootTrackerDB.settings
+        
+        if settings.scale then
+            self:SetScale(settings.scale)
+        end
+        
+        if settings.fontSize then
+            self:SetFontSize(settings.fontSize)
+        end
+    end
 end
