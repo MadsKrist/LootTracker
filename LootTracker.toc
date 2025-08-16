@@ -2,7 +2,7 @@
 ## Title: LootTracker
 ## Notes: Tracks loot value per farming session using aux prices
 ## Author: MadsKrist
-## Version: 0.14
+## Version: 0.15
 ## SavedVariables: LootTrackerDB
 ## SavedVariablesPerCharacter: LootTrackerCDB
 ## OptionalDeps: aux-addon

@@ -137,16 +137,42 @@ function LT:CreateGUI()
         local thumbTex = scrollBar:GetThumbTexture()
         if thumbTex then
             thumbTex:SetPoint("CENTER", 0, 0)
-            thumbTex:SetTexture(unpack(COLORS.content.bg))
+            thumbTex:SetTexture("Interface\\Buttons\\WHITE8X8")
+            thumbTex:SetVertexColor(0.4, 0.4, 0.5, 0.9) -- Lighter gray color
             thumbTex:SetHeight(50)
             thumbTex:SetWidth(scrollBar:GetWidth())
         end
         
-        -- Hide scroll buttons
-        local upButton = _G[scrollBar:GetName() .. "ScrollUpButton"]
-        local downButton = _G[scrollBar:GetName() .. "ScrollDownButton"]
-        if upButton then upButton:Hide() end
-        if downButton then downButton:Hide() end
+        -- Hide scroll buttons completely
+        local scrollBarName = scrollBar:GetName()
+        local upButton = _G[scrollBarName .. "ScrollUpButton"]
+        local downButton = _G[scrollBarName .. "ScrollDownButton"]
+        
+        if upButton then 
+            upButton:Hide()
+            upButton:SetAlpha(0)
+            upButton:EnableMouse(false)
+        end
+        if downButton then 
+            downButton:Hide()
+            downButton:SetAlpha(0)
+            downButton:EnableMouse(false)
+        end
+        
+        -- Also try alternative naming patterns
+        local upButton2 = _G[scrollBarName .. "UpButton"]
+        local downButton2 = _G[scrollBarName .. "DownButton"]
+        
+        if upButton2 then 
+            upButton2:Hide()
+            upButton2:SetAlpha(0)
+            upButton2:EnableMouse(false)
+        end
+        if downButton2 then 
+            downButton2:Hide()
+            downButton2:SetAlpha(0)
+            downButton2:EnableMouse(false)
+        end
         
         -- Style the track
         set_panel_style(scrollBar)
