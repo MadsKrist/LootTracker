@@ -7,7 +7,7 @@ local LT = LootTracker
 function LT:CreateGUI()
     if self.gui then return end
 
-    local f = CreateFrame("Frame", "LootTrackerFrame", UIParent, "BasicFrameTemplate")
+    local f = CreateFrame("Frame", "LootTrackerFrame", UIParent)
     f:SetSize(300, 400)
     f:SetPoint("CENTER")
     f:SetMovable(true)
