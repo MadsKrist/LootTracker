@@ -54,7 +54,7 @@ function LT:CreateGUI()
     if self.gui then return end
 
     local f = CreateFrame("Frame", "LootTrackerFrame", UIParent)
-    f:SetWidth(320)
+    f:SetWidth(350)
     f:SetHeight(270)
     f:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
     f:SetMovable(true)
@@ -284,13 +284,13 @@ function LT:UpdateGUI()
     end
     wipe(self.gui.items)
 
-    local y = -8
+    local y = -5
     for _, entry in pairs(self.session.items) do
         local line = self.gui.itemContent:CreateFontString(nil, "OVERLAY")
         line:SetFont(FONT, FONT_SIZE.small)
         line:SetTextColor(unpack(COLORS.text.enabled))
-        line:SetPoint("TOPLEFT", 5, y)
-        line:SetPoint("TOPRIGHT", -5, y)
+        line:SetPoint("TOPLEFT", 3, y)
+        line:SetPoint("TOPRIGHT", -3, y)
         line:SetJustifyH("LEFT")
         line:SetText(entry.count.."x "..entry.link.." = "..self:FormatMoney(entry.value))
         table.insert(self.gui.items, line)

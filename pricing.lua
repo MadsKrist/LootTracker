@@ -5,8 +5,11 @@ local LT = LootTracker
 -- Aux pricing
 --------------------------------------------------
 local function auxPrice(itemId)
-    if aux and aux.history and aux.history.value then
-        local value = aux.history.value(itemId)
+    if aux and aux.core and aux.core.history and aux.core.history.value then
+        -- aux expects item key in format "item_id:suffix_id"
+        -- For most items, suffix_id is 0
+        local itemKey = tostring(itemId) .. ":0"
+        local value = aux.core.history.value(itemKey)
         if value and value > 0 then
             return value
         end
