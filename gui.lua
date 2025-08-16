@@ -102,7 +102,7 @@ function LT:CreateGUI()
     local statsPanel = CreateFrame("Frame", nil, f)
     statsPanel:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -35)
     statsPanel:SetWidth(300)
-    statsPanel:SetHeight(70)
+    statsPanel:SetHeight(60)
     set_panel_style(statsPanel)
     
     f.stats = statsPanel:CreateFontString(nil, "OVERLAY")
@@ -118,7 +118,7 @@ function LT:CreateGUI()
     local listPanel = CreateFrame("Frame", nil, f)
     listPanel:SetPoint("TOPLEFT", statsPanel, "BOTTOMLEFT", 0, -10)
     listPanel:SetWidth(300)
-    listPanel:SetHeight(240)
+    listPanel:SetHeight(180)
     set_content_style(listPanel)
     
     local scrollFrame = CreateFrame("ScrollFrame", "LTItemScroll", listPanel, "UIPanelScrollFrameTemplate")
@@ -316,6 +316,9 @@ function LT:SetScale(scale)
     if self.gui then
         self.gui:SetScale(scale)
         -- Store setting for persistence
+        if not LootTrackerDB then
+            LootTrackerDB = {}
+        end
         if not LootTrackerDB.settings then
             LootTrackerDB.settings = {}
         end
@@ -354,6 +357,9 @@ function LT:SetFontSize(size)
     end
     
     -- Store setting for persistence
+    if not LootTrackerDB then
+        LootTrackerDB = {}
+    end
     if not LootTrackerDB.settings then
         LootTrackerDB.settings = {}
     end
