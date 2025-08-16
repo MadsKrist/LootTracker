@@ -447,6 +447,19 @@ function LT:LoadSettings()
 end
 
 --------------------------------------------------
+-- Reset window position
+--------------------------------------------------
+function LT:ResetWindowPosition()
+    if self.gui then
+        self.gui:ClearAllPoints()
+        self.gui:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+        self:Print("Window position reset to center")
+    else
+        self:Print("Window not open")
+    end
+end
+
+--------------------------------------------------
 -- Quality Filter
 --------------------------------------------------
 function LT:CycleQualityFilter()

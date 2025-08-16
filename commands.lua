@@ -46,11 +46,14 @@ SlashCmdList["LOOTTRACKER"] = function(msg)
         else
             LT:Print("Usage: /lt fontsize <small|medium|large>")
         end
+    elseif cmd == "position" or cmd == "pos" then
+        LT:ResetWindowPosition()
     elseif cmd == "" then
         LT:Print("Commands:")
         LT:Print("  /lt start | pause | reset | show")
         LT:Print("  /lt scale <0.5-2.0>")
         LT:Print("  /lt fontsize <small|medium|large>")
+        LT:Print("  /lt position - reset window position")
     else
         LT:Print("Unknown command: "..cmd)
     end
