@@ -121,6 +121,10 @@ function LT:OnItemLoot(msg)
         itemId = tonumber(itemId)
         suffixId = tonumber(suffixId) or 0
         
+        -- Debug output
+        DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00[LT Debug]|r Item link: " .. itemLink)
+        DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00[LT Debug]|r Parsed itemId: " .. tostring(itemId) .. ", suffixId: " .. tostring(suffixId))
+        
         if itemId then
             -- Get item value (pass both item ID and suffix ID)
             local unitValue = self:GetItemValue(itemId, suffixId)
