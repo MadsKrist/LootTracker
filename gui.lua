@@ -70,7 +70,7 @@ function LT:CreateGUI()
     local closeBtn = CreateFrame("Button", nil, f)
     closeBtn:SetWidth(20)
     closeBtn:SetHeight(20)
-    closeBtn:SetPoint("TOPRIGHT", f, "TOPRIGHT", -5, -5)
+    closeBtn:SetPoint("TOPRIGHT", f, "TOPRIGHT", -7, -7)
     set_content_style(closeBtn)
     
     local closeText = closeBtn:CreateFontString()
@@ -100,7 +100,7 @@ function LT:CreateGUI()
     -- Stats panel
     --------------------------------------------------
     local statsPanel = CreateFrame("Frame", nil, f)
-    statsPanel:SetPoint("TOPLEFT", f, "TOPLEFT", 5, -35)
+    statsPanel:SetPoint("TOPLEFT", f, "TOPLEFT", 7, -7)
     statsPanel:SetWidth(300)
     statsPanel:SetHeight(60)
     set_panel_style(statsPanel)
