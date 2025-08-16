@@ -8,7 +8,8 @@ function LT:CreateGUI()
     if self.gui then return end
 
     local f = CreateFrame("Frame", "LootTrackerFrame", UIParent)
-    f:SetSize(300, 400)
+    f:SetWidth(300)
+    f:SetHeight(400)
     f:SetPoint("CENTER")
     f:SetMovable(true)
     f:EnableMouse(true)
