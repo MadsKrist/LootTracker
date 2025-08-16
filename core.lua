@@ -182,9 +182,9 @@ end
 function LT:FormatMoney(copper)
     if not copper or copper == 0 then return "0c" end
     
-    copper = floor(copper)
-    local gold = floor(copper / 10000)
-    local silver = floor((copper % 10000) / 100)
+    copper = math.floor(copper)
+    local gold = math.floor(copper / 10000)
+    local silver = math.floor((copper % 10000) / 100)
     local c = copper % 100
     
     local result = ""
