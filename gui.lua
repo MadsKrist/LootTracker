@@ -100,7 +100,7 @@ function LT:CreateGUI()
     -- Stats panel
     --------------------------------------------------
     local statsPanel = CreateFrame("Frame", nil, f)
-    statsPanel:SetPoint("TOPLEFT", f, "TOPLEFT", 7, -25)
+    statsPanel:SetPoint("TOPLEFT", f, "TOPLEFT", 7, -28)
     statsPanel:SetWidth(306)
     statsPanel:SetHeight(60)
     set_panel_style(statsPanel)
@@ -117,8 +117,8 @@ function LT:CreateGUI()
     --------------------------------------------------
     local listPanel = CreateFrame("Frame", nil, f)
     listPanel:SetPoint("TOPLEFT", statsPanel, "BOTTOMLEFT", 0, -10)
-    listPanel:SetWidth(300)
-    listPanel:SetHeight(150)
+    listPanel:SetWidth(306)
+    listPanel:SetHeight(130)
     set_content_style(listPanel)
     
     local scrollFrame = CreateFrame("ScrollFrame", "LTItemScroll", listPanel, "UIPanelScrollFrameTemplate")
@@ -212,14 +212,14 @@ function LT:CreateGUI()
     end
     
     f.toggleBtn = create_aux_button(f, "Start")
-    f.toggleBtn:SetPoint("BOTTOMLEFT", 10, 10)
+    f.toggleBtn:SetPoint("BOTTOMLEFT", 7, 7)
     f.toggleBtn:SetScript("OnClick", function() 
         LT:ToggleSession() 
         LT:UpdateGUI() 
     end)
 
     f.resetBtn = create_aux_button(f, "Reset")
-    f.resetBtn:SetPoint("LEFT", f.toggleBtn, "RIGHT", 25, 0)
+    f.resetBtn:SetPoint("BOTTOMRIGHT", -7, 7)
     f.resetBtn:SetScript("OnClick", function() LT:ResetSession() LT:UpdateGUI() end)
 
     self.gui = f
