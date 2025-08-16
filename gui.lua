@@ -100,7 +100,7 @@ function LT:CreateGUI()
     -- Stats panel
     --------------------------------------------------
     local statsPanel = CreateFrame("Frame", nil, f)
-    statsPanel:SetPoint("TOPLEFT", f, "TOPLEFT", 7, -7)
+    statsPanel:SetPoint("TOPLEFT", f, "TOPLEFT", 7, -20)
     statsPanel:SetWidth(300)
     statsPanel:SetHeight(60)
     set_panel_style(statsPanel)
