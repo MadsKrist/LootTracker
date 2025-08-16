@@ -222,6 +222,18 @@ function LT:CreateGUI()
     f.resetBtn:SetPoint("BOTTOMRIGHT", -7, 7)
     f.resetBtn:SetScript("OnClick", function() LT:ResetSession() LT:UpdateGUI() end)
 
+    -- Timer for updating display every second
+    f.timer = 0
+    f:SetScript("OnUpdate", function()
+        f.timer = f.timer + arg1
+        if f.timer >= 1.0 then -- Update every second
+            f.timer = 0
+            if LT.session.active then -- Update for both active and paused sessions
+                LT:UpdateGUI()
+            end
+        end
+    end)
+
     self.gui = f
 end
 

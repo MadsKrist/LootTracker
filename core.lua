@@ -115,13 +115,15 @@ function LT:OnItemLoot(msg)
     if itemLink then
         quantity = tonumber(quantity) or 1
         
-        -- Extract item ID from the item link
-        local itemId = string.match(itemLink, "item:(%d+)")
+        -- Extract item ID and suffix ID from the item link
+        -- Format: |cffffffff|Hitem:item_id:suffix_id:unique_id:...|h[Item Name]|h|r
+        local itemId, suffixId = string.match(itemLink, "item:(%d+):(%d+)")
         itemId = tonumber(itemId)
+        suffixId = tonumber(suffixId) or 0
         
         if itemId then
-            -- Get item value
-            local unitValue = self:GetItemValue(itemId)
+            -- Get item value (pass both item ID and suffix ID)
+            local unitValue = self:GetItemValue(itemId, suffixId)
             local totalValue = unitValue * quantity
             
             -- Add to session
