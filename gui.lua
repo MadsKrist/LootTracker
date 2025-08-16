@@ -128,8 +128,9 @@ end
 -- Helpers
 --------------------------------------------------
 function LT:FormatTime(seconds)
-    local h = floor(seconds / 3600)
-    local m = floor((seconds % 3600) / 60)
-    local s = floor(seconds % 60)
+    local h = math.floor(seconds / 3600)
+    local remainder = seconds - (h * 3600)
+    local m = math.floor(remainder / 60)
+    local s = remainder - (m * 60)
     return string.format("%02dh %02dm %02ds", h, m, s)
 end
