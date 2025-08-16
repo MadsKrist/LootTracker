@@ -1,6 +1,48 @@
 -- LootTracker/gui.lua
 local LT = LootTracker
 
+-- Aux-style GUI constants
+local FONT = "Fonts\\ARIALN.TTF"
+local FONT_SIZE = {
+    small = 13,
+    medium = 15,
+    large = 18,
+}
+
+-- Color scheme similar to aux
+local COLORS = {
+    window = { bg = {0.05, 0.05, 0.08, 0.95}, border = {0.2, 0.2, 0.3, 1} },
+    panel = { bg = {0.1, 0.1, 0.15, 0.9}, border = {0.25, 0.25, 0.35, 1} },
+    content = { bg = {0.15, 0.15, 0.2, 0.9}, border = {0.3, 0.3, 0.4, 1} },
+    text = { enabled = {0.9, 0.9, 0.9, 1}, disabled = {0.5, 0.5, 0.5, 1} },
+    label = { enabled = {0.7, 0.7, 0.8, 1} }
+}
+
+-- Helper functions for aux-style frames
+local function set_frame_style(frame, bg_color, border_color, left, right, top, bottom)
+    frame:SetBackdrop({
+        bgFile = "Interface\\Buttons\\WHITE8X8",
+        edgeFile = "Interface\\Buttons\\WHITE8X8",
+        edgeSize = 1.5,
+        tile = true,
+        insets = { left = left or 0, right = right or 0, top = top or 0, bottom = bottom or 0 }
+    })
+    frame:SetBackdropColor(unpack(bg_color))
+    frame:SetBackdropBorderColor(unpack(border_color))
+end
+
+local function set_window_style(frame)
+    set_frame_style(frame, COLORS.window.bg, COLORS.window.border, 1, 1, 1, 1)
+end
+
+local function set_panel_style(frame)
+    set_frame_style(frame, COLORS.panel.bg, COLORS.panel.border, 1, 1, 1, 1)
+end
+
+local function set_content_style(frame)
+    set_frame_style(frame, COLORS.content.bg, COLORS.content.border, 1, 1, 1, 1)
+end
+
 --------------------------------------------------
 -- Create main frame
 --------------------------------------------------
@@ -8,8 +50,8 @@ function LT:CreateGUI()
     if self.gui then return end
 
     local f = CreateFrame("Frame", "LootTrackerFrame", UIParent)
-    f:SetWidth(300)
-    f:SetHeight(400)
+    f:SetWidth(320)
+    f:SetHeight(420)
     f:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
     f:SetMovable(true)
     f:EnableMouse(true)
@@ -17,49 +59,51 @@ function LT:CreateGUI()
     f:SetScript("OnDragStart", function() f:StartMoving() end)
     f:SetScript("OnDragStop", function() f:StopMovingOrSizing() end)
     
-    -- Add backdrop for background
-    f:SetBackdrop({
-        bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-        edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-        tile = true,
-        tileSize = 32,
-        edgeSize = 32,
-        insets = { left = 11, right = 12, top = 12, bottom = 11 }
-    })
-    f:SetBackdropColor(0, 0, 0, 0.8)
-    
-    -- Add title background
-    f.TitleBg = f:CreateTexture(nil, "ARTWORK")
-    f.TitleBg:SetTexture("Interface\\DialogFrame\\UI-DialogBox-Header")
-    f.TitleBg:SetWidth(256)
-    f.TitleBg:SetHeight(64)
-    f.TitleBg:SetPoint("TOP", 0, 12)
+    -- Aux-style window background
+    set_window_style(f)
     
     f:Hide()
 
-    f.title = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    f.title:SetPoint("CENTER", f.TitleBg, "CENTER", 0, 0)
+    -- Title using aux font styling
+    f.title = f:CreateFontString(nil, "OVERLAY")
+    f.title:SetFont(FONT, FONT_SIZE.large)
+    f.title:SetTextColor(unpack(COLORS.text.enabled))
+    f.title:SetPoint("TOP", f, "TOP", 0, -10)
     f.title:SetText("Loot Tracker")
 
     --------------------------------------------------
-    -- Stats area
+    -- Stats panel
     --------------------------------------------------
-    f.stats = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    f.stats:SetPoint("TOPLEFT", 10, -30)
+    local statsPanel = CreateFrame("Frame", nil, f)
+    statsPanel:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -35)
+    statsPanel:SetWidth(300)
+    statsPanel:SetHeight(70)
+    set_panel_style(statsPanel)
+    
+    f.stats = statsPanel:CreateFontString(nil, "OVERLAY")
+    f.stats:SetFont(FONT, FONT_SIZE.medium)
+    f.stats:SetTextColor(unpack(COLORS.text.enabled))
+    f.stats:SetPoint("TOPLEFT", statsPanel, "TOPLEFT", 8, -8)
     f.stats:SetJustifyH("LEFT")
     f.stats:SetText("No session running")
 
     --------------------------------------------------
     -- Scrollable item list
     --------------------------------------------------
-    local scrollFrame = CreateFrame("ScrollFrame", "LTItemScroll", f, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -60)
-    scrollFrame:SetWidth(260)
-    scrollFrame:SetHeight(250)
+    local listPanel = CreateFrame("Frame", nil, f)
+    listPanel:SetPoint("TOPLEFT", statsPanel, "BOTTOMLEFT", 0, -10)
+    listPanel:SetWidth(300)
+    listPanel:SetHeight(240)
+    set_content_style(listPanel)
+    
+    local scrollFrame = CreateFrame("ScrollFrame", "LTItemScroll", listPanel, "UIPanelScrollFrameTemplate")
+    scrollFrame:SetPoint("TOPLEFT", listPanel, "TOPLEFT", 5, -5)
+    scrollFrame:SetWidth(285)
+    scrollFrame:SetHeight(225)
 
     local content = CreateFrame("Frame", nil, scrollFrame)
-    content:SetWidth(260)
-    content:SetHeight(250)
+    content:SetWidth(285)
+    content:SetHeight(225)
     scrollFrame:SetScrollChild(content)
 
     f.itemContent = content
@@ -68,25 +112,38 @@ function LT:CreateGUI()
     --------------------------------------------------
     -- Buttons
     --------------------------------------------------
-    f.startBtn = CreateFrame("Button", nil, f, "GameMenuButtonTemplate")
-    f.startBtn:SetPoint("BOTTOMLEFT", 10, 10)
-    f.startBtn:SetWidth(70)
-    f.startBtn:SetHeight(25)
-    f.startBtn:SetText("Start")
+    local function create_aux_button(parent, text)
+        local button = CreateFrame("Button", nil, parent)
+        button:SetWidth(80)
+        button:SetHeight(24)
+        set_content_style(button)
+        
+        local highlight = button:CreateTexture(nil, "HIGHLIGHT")
+        highlight:SetAllPoints()
+        highlight:SetTexture(1, 1, 1, 0.2)
+        
+        local label = button:CreateFontString()
+        label:SetFont(FONT, FONT_SIZE.medium)
+        label:SetAllPoints(button)
+        label:SetJustifyH("CENTER")
+        label:SetJustifyV("CENTER")
+        label:SetTextColor(unpack(COLORS.text.enabled))
+        button:SetFontString(label)
+        button:SetText(text)
+        
+        return button
+    end
+    
+    f.startBtn = create_aux_button(f, "Start")
+    f.startBtn:SetPoint("BOTTOMLEFT", 15, 15)
     f.startBtn:SetScript("OnClick", function() LT:StartSession() LT:UpdateGUI() end)
 
-    f.pauseBtn = CreateFrame("Button", nil, f, "GameMenuButtonTemplate")
-    f.pauseBtn:SetPoint("LEFT", f.startBtn, "RIGHT", 10, 0)
-    f.pauseBtn:SetWidth(70)
-    f.pauseBtn:SetHeight(25)
-    f.pauseBtn:SetText("Pause")
+    f.pauseBtn = create_aux_button(f, "Pause")
+    f.pauseBtn:SetPoint("LEFT", f.startBtn, "RIGHT", 15, 0)
     f.pauseBtn:SetScript("OnClick", function() LT:PauseSession() LT:UpdateGUI() end)
 
-    f.resetBtn = CreateFrame("Button", nil, f, "GameMenuButtonTemplate")
-    f.resetBtn:SetPoint("LEFT", f.pauseBtn, "RIGHT", 10, 0)
-    f.resetBtn:SetWidth(70)
-    f.resetBtn:SetHeight(25)
-    f.resetBtn:SetText("Reset")
+    f.resetBtn = create_aux_button(f, "Reset")
+    f.resetBtn:SetPoint("LEFT", f.pauseBtn, "RIGHT", 15, 0)
     f.resetBtn:SetScript("OnClick", function() LT:ResetSession() LT:UpdateGUI() end)
 
     self.gui = f
@@ -139,13 +196,17 @@ function LT:UpdateGUI()
     end
     wipe(self.gui.items)
 
-    local y = -5
+    local y = -8
     for _, entry in pairs(self.session.items) do
-        local line = self.gui.itemContent:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-        line:SetPoint("TOPLEFT", 0, y)
+        local line = self.gui.itemContent:CreateFontString(nil, "OVERLAY")
+        line:SetFont(FONT, FONT_SIZE.small)
+        line:SetTextColor(unpack(COLORS.text.enabled))
+        line:SetPoint("TOPLEFT", 5, y)
+        line:SetPoint("TOPRIGHT", -5, y)
+        line:SetJustifyH("LEFT")
         line:SetText(entry.count.."x "..entry.link.." = "..self:FormatMoney(entry.value))
         table.insert(self.gui.items, line)
-        y = y - 15
+        y = y - 16
     end
 end
 
