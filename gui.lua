@@ -16,6 +16,25 @@ function LT:CreateGUI()
     f:RegisterForDrag("LeftButton")
     f:SetScript("OnDragStart", f.StartMoving)
     f:SetScript("OnDragStop", f.StopMovingOrSizing)
+    
+    -- Add backdrop for background
+    f:SetBackdrop({
+        bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
+        edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+        tile = true,
+        tileSize = 32,
+        edgeSize = 32,
+        insets = { left = 11, right = 12, top = 12, bottom = 11 }
+    })
+    f:SetBackdropColor(0, 0, 0, 0.8)
+    
+    -- Add title background
+    f.TitleBg = f:CreateTexture(nil, "ARTWORK")
+    f.TitleBg:SetTexture("Interface\\DialogFrame\\UI-DialogBox-Header")
+    f.TitleBg:SetWidth(256)
+    f.TitleBg:SetHeight(64)
+    f.TitleBg:SetPoint("TOP", 0, 12)
+    
     f:Hide()
 
     f.title = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
