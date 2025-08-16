@@ -343,12 +343,12 @@ function LT:UpdateGUI(recalculateGPH)
     -- Get current quality filter
     local minQuality = self.qualityFilter or 0
     
-    local y = -5
+    local y = -2
     for _, entry in pairs(self.session.items) do
         -- Apply quality filter for display (but all items still count in totals)
         if (entry.quality or 1) >= minQuality then
             local line = self.gui.itemContent:CreateFontString(nil, "OVERLAY")
-            line:SetFont(FONT, FONT_SIZE.small)
+            line:SetFont(FONT, FONT_SIZE.medium)
             line:SetTextColor(unpack(COLORS.text.enabled))
             line:SetPoint("TOPLEFT", 1, y)
             line:SetPoint("TOPRIGHT", -1, y)
