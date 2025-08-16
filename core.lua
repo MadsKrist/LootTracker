@@ -92,6 +92,16 @@ function LT:ResetSession()
     self:Print("Session reset.")
 end
 
+function LT:ToggleSession()
+    if not self.session.active then
+        -- Start session
+        self:StartSession()
+    else
+        -- Toggle pause/resume
+        self:PauseSession()
+    end
+end
+
 --------------------------------------------------
 -- Loot tracking
 --------------------------------------------------

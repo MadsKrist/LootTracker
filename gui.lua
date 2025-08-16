@@ -88,13 +88,13 @@ function LT:CreateGUI()
     closeBtn:SetScript("OnClick", function() f:Hide() end)
     
     -- Title using aux font styling
-    f.title = f:CreateFontString(nil, "OVERLAY")
-    f.title:SetFont(FONT, FONT_SIZE.large)
-    f.title:SetTextColor(unpack(COLORS.text.enabled))
-    f.title:SetPoint("TOP", f, "TOP", 0, -10)
-    f.title:SetText("Loot Tracker")
+   --  f.title = f:CreateFontString(nil, "OVERLAY")
+   --  f.title:SetFont(FONT, FONT_SIZE.large)
+   --  f.title:SetTextColor(unpack(COLORS.text.enabled))
+   --  f.title:SetPoint("TOP", f, "TOP", 0, -10)
+   --  f.title:SetText("Loot Tracker")
     
-    f:Hide()
+   --  f:Hide()
 
     --------------------------------------------------
     -- Stats panel
@@ -211,16 +211,15 @@ function LT:CreateGUI()
         return button
     end
     
-    f.startBtn = create_aux_button(f, "Start")
-    f.startBtn:SetPoint("BOTTOMLEFT", 15, 15)
-    f.startBtn:SetScript("OnClick", function() LT:StartSession() LT:UpdateGUI() end)
-
-    f.pauseBtn = create_aux_button(f, "Pause")
-    f.pauseBtn:SetPoint("LEFT", f.startBtn, "RIGHT", 15, 0)
-    f.pauseBtn:SetScript("OnClick", function() LT:PauseSession() LT:UpdateGUI() end)
+    f.toggleBtn = create_aux_button(f, "Start")
+    f.toggleBtn:SetPoint("BOTTOMLEFT", 15, 15)
+    f.toggleBtn:SetScript("OnClick", function() 
+        LT:ToggleSession() 
+        LT:UpdateGUI() 
+    end)
 
     f.resetBtn = create_aux_button(f, "Reset")
-    f.resetBtn:SetPoint("LEFT", f.pauseBtn, "RIGHT", 15, 0)
+    f.resetBtn:SetPoint("LEFT", f.toggleBtn, "RIGHT", 25, 0)
     f.resetBtn:SetScript("OnClick", function() LT:ResetSession() LT:UpdateGUI() end)
 
     self.gui = f
@@ -266,6 +265,17 @@ function LT:UpdateGUI()
             self:FormatMoney(totalValue),
             self:FormatMoney(gph)
         ))
+    end
+
+    -- Update toggle button text
+    if self.gui.toggleBtn then
+        if not s.active then
+            self.gui.toggleBtn:SetText("Start")
+        elseif s.paused then
+            self.gui.toggleBtn:SetText("Resume")
+        else
+            self.gui.toggleBtn:SetText("Pause")
+        end
     end
 
     -- Clear item content
@@ -336,11 +346,8 @@ function LT:SetFontSize(size)
     end
     
     -- Update button text
-    if self.gui.startBtn and self.gui.startBtn:GetFontString() then
-        self.gui.startBtn:GetFontString():SetFont(FONT, fontSize)
-    end
-    if self.gui.pauseBtn and self.gui.pauseBtn:GetFontString() then
-        self.gui.pauseBtn:GetFontString():SetFont(FONT, fontSize)
+    if self.gui.toggleBtn and self.gui.toggleBtn:GetFontString() then
+        self.gui.toggleBtn:GetFontString():SetFont(FONT, fontSize)
     end
     if self.gui.resetBtn and self.gui.resetBtn:GetFontString() then
         self.gui.resetBtn:GetFontString():SetFont(FONT, fontSize)
