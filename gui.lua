@@ -34,11 +34,13 @@ function LT:CreateGUI()
     -- Scrollable item list
     --------------------------------------------------
     local scrollFrame = CreateFrame("ScrollFrame", "LTItemScroll", f, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", 10, -60)
-    scrollFrame:SetSize(260, 250)
+    scrollFrame:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -60)
+    scrollFrame:SetWidth(260)
+    scrollFrame:SetHeight(250)
 
     local content = CreateFrame("Frame", nil, scrollFrame)
-    content:SetSize(260, 250)
+    content:SetWidth(260)
+    content:SetHeight(250)
     scrollFrame:SetScrollChild(content)
 
     f.itemContent = content
