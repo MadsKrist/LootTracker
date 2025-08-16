@@ -122,13 +122,39 @@ function LT:CreateGUI()
     set_content_style(listPanel)
     
     local scrollFrame = CreateFrame("ScrollFrame", "LTItemScroll", listPanel, "UIPanelScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", listPanel, "TOPLEFT", 5, -15)
-    scrollFrame:SetWidth(285)
-    scrollFrame:SetHeight(225)
+    scrollFrame:SetPoint("TOPLEFT", listPanel, "TOPLEFT", 5, -5)
+    scrollFrame:SetPoint("BOTTOMRIGHT", listPanel, "BOTTOMRIGHT", -15, 5)
+
+    -- Apply aux-style scrollbar
+    local scrollBar = _G[scrollFrame:GetName() .. "ScrollBar"]
+    if scrollBar then
+        scrollBar:ClearAllPoints()
+        scrollBar:SetPoint("TOPRIGHT", listPanel, "TOPRIGHT", -4, -4)
+        scrollBar:SetPoint("BOTTOMRIGHT", listPanel, "BOTTOMRIGHT", -4, 4)
+        scrollBar:SetWidth(10)
+        
+        -- Style the thumb
+        local thumbTex = scrollBar:GetThumbTexture()
+        if thumbTex then
+            thumbTex:SetPoint("CENTER", 0, 0)
+            thumbTex:SetTexture(unpack(COLORS.content.bg))
+            thumbTex:SetHeight(50)
+            thumbTex:SetWidth(scrollBar:GetWidth())
+        end
+        
+        -- Hide scroll buttons
+        local upButton = _G[scrollBar:GetName() .. "ScrollUpButton"]
+        local downButton = _G[scrollBar:GetName() .. "ScrollDownButton"]
+        if upButton then upButton:Hide() end
+        if downButton then downButton:Hide() end
+        
+        -- Style the track
+        set_panel_style(scrollBar)
+    end
 
     local content = CreateFrame("Frame", nil, scrollFrame)
-    content:SetWidth(285)
-    content:SetHeight(225)
+    content:SetWidth(270)
+    content:SetHeight(1000) -- Large height for scrolling
     scrollFrame:SetScrollChild(content)
 
     f.itemContent = content
