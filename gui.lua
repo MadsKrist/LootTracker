@@ -4,9 +4,9 @@ local LT = LootTracker
 -- Aux-style GUI constants
 local FONT = "Fonts\\ARIALN.TTF"
 local FONT_SIZE = {
-    small = 13,
-    medium = 15,
-    large = 18,
+    small = 11,
+    medium = 13,
+    large = 16,
 }
 
 -- Default settings
@@ -70,7 +70,7 @@ function LT:CreateGUI()
     local closeBtn = CreateFrame("Button", nil, f)
     closeBtn:SetWidth(20)
     closeBtn:SetHeight(20)
-    closeBtn:SetPoint("TOPRIGHT", f, "TOPRIGHT", -5, -5)
+    closeBtn:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -10)
     set_content_style(closeBtn)
     
     local closeText = closeBtn:CreateFontString()
@@ -212,7 +212,7 @@ function LT:CreateGUI()
     end
     
     f.toggleBtn = create_aux_button(f, "Start")
-    f.toggleBtn:SetPoint("BOTTOMLEFT", 15, 15)
+    f.toggleBtn:SetPoint("BOTTOMLEFT", 10, 10)
     f.toggleBtn:SetScript("OnClick", function() 
         LT:ToggleSession() 
         LT:UpdateGUI() 
