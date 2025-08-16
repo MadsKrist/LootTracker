@@ -55,7 +55,7 @@ function LT:CreateGUI()
 
     local f = CreateFrame("Frame", "LootTrackerFrame", UIParent)
     f:SetWidth(320)
-    f:SetHeight(300)
+    f:SetHeight(280)
     f:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
     f:SetMovable(true)
     f:EnableMouse(true)
@@ -116,7 +116,7 @@ function LT:CreateGUI()
     -- Scrollable item list
     --------------------------------------------------
     local listPanel = CreateFrame("Frame", nil, f)
-    listPanel:SetPoint("TOPLEFT", statsPanel, "BOTTOMLEFT", 0, -10)
+    listPanel:SetPoint("TOPLEFT", statsPanel, "BOTTOMLEFT", 0, -7)
     listPanel:SetWidth(306)
     listPanel:SetHeight(130)
     set_content_style(listPanel)
