@@ -116,13 +116,29 @@ function LT:OnItemLoot(msg)
         quantity = tonumber(quantity) or 1
         
         -- Extract item ID and suffix ID from the item link
-        -- Format: |cffffffff|Hitem:item_id:suffix_id:unique_id:...|h[Item Name]|h|r
-        local itemId, suffixId = string.match(itemLink, "item:(%d+):(%d+)")
-        itemId = tonumber(itemId)
-        suffixId = tonumber(suffixId) or 0
+        -- Format: |cffffffff|Hitem:item_id:enchant_id:gem1:gem2:gem3:gem4:suffix_id:unique_id:...|h[Item Name]|h|r
+        -- For 1.12, the format is simpler: |Hitem:item_id:enchant_id:suffix_id:unique_id|h[Item Name]|h
+        local linkData = string.match(itemLink, "item:([^|]+)")
+        local parts = {}
+        if linkData then
+            for part in string.gmatch(linkData, "([^:]+)") do
+                table.insert(parts, part)
+            end
+        end
+        
+        local itemId = tonumber(parts[1])
+        local suffixId = tonumber(parts[3]) or 0  -- Third field is suffix in 1.12 format
         
         -- Debug output
         DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00[LT Debug]|r Item link: " .. itemLink)
+        if linkData then
+            DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00[LT Debug]|r Link data: " .. linkData)
+            local partsStr = ""
+            for i, part in ipairs(parts) do
+                partsStr = partsStr .. "[" .. i .. "]=" .. part .. " "
+            end
+            DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00[LT Debug]|r Parts: " .. partsStr)
+        end
         DEFAULT_CHAT_FRAME:AddMessage("|cff00ff00[LT Debug]|r Parsed itemId: " .. tostring(itemId) .. ", suffixId: " .. tostring(suffixId))
         
         if itemId then
