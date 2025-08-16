@@ -5,14 +5,45 @@ local LT = LootTracker
 -- Aux pricing
 --------------------------------------------------
 local function auxPrice(itemId)
-    if aux and aux.core and aux.core.history and aux.core.history.value then
-        -- aux expects item key in format "item_id:suffix_id"
-        -- For most items, suffix_id is 0
+    -- Debug: Print aux structure
+    if aux then
+        DEFAULT_CHAT_FRAME:AddMessage("[LT Debug] aux exists")
+        
+        -- Check different possible paths
+        if aux.history then
+            DEFAULT_CHAT_FRAME:AddMessage("[LT Debug] aux.history exists")
+            if aux.history.value then
+                DEFAULT_CHAT_FRAME:AddMessage("[LT Debug] aux.history.value exists")
+            end
+        end
+        
+        if aux.core then
+            DEFAULT_CHAT_FRAME:AddMessage("[LT Debug] aux.core exists")
+            if aux.core.history then
+                DEFAULT_CHAT_FRAME:AddMessage("[LT Debug] aux.core.history exists")
+                if aux.core.history.value then
+                    DEFAULT_CHAT_FRAME:AddMessage("[LT Debug] aux.core.history.value exists")
+                end
+            end
+        end
+        
+        -- Try to get value using different approaches
         local itemKey = tostring(itemId) .. ":0"
-        local value = aux.core.history.value(itemKey)
+        local value = nil
+        
+        if aux.core and aux.core.history and aux.core.history.value then
+            value = aux.core.history.value(itemKey)
+            DEFAULT_CHAT_FRAME:AddMessage("[LT Debug] aux.core.history.value(" .. itemKey .. ") = " .. tostring(value))
+        elseif aux.history and aux.history.value then
+            value = aux.history.value(itemKey)
+            DEFAULT_CHAT_FRAME:AddMessage("[LT Debug] aux.history.value(" .. itemKey .. ") = " .. tostring(value))
+        end
+        
         if value and value > 0 then
             return value
         end
+    else
+        DEFAULT_CHAT_FRAME:AddMessage("[LT Debug] aux not found")
     end
 end
 
